@@ -241,13 +241,13 @@ resource "aws_security_group" "public-subnet-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow inbound HTTP access to the web servers from any IPv4 address."
   }
-  ingress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = aws_security_group.private-subnet-sg.id
-    description = "Allow all inbound traffic from private subnet"
-  }
+#  ingress {
+#    protocol    = "-1"
+#    from_port   = 0
+#    to_port     = 0
+#    cidr_blocks = aws_security_group.private-subnet-sg.id
+#    description = "Allow all inbound traffic from private subnet"
+#  }
 
   egress {
     protocol    = "tcp"
@@ -263,13 +263,13 @@ resource "aws_security_group" "public-subnet-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow outbound HTTPS access to the web servers from any IPv4 address."
   }
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = aws_security_group.private-subnet-sg.id
-    description = "Allow all outbound traffic to private subnet"
-  }
+#  egress {
+#    protocol    = "-1"
+#    from_port   = 0
+#    to_port     = 0
+#    cidr_blocks = aws_security_group.private-subnet-sg.id
+#    description = "Allow all outbound traffic to private subnet"
+#  }
 
   tags = {
     Name = "Public Security Group"
@@ -281,13 +281,13 @@ resource "aws_security_group" "private-subnet-sg" {
   description = "Security group attached to private subnet"
   vpc_id      = aws_vpc.vpc.id
 
-  ingress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = aws_security_group.public-subnet-sg.id
-    description = "Allow all inbound traffic from public subnet"
-  }
+#  ingress {
+#    protocol    = "-1"
+#    from_port   = 0
+#    to_port     = 0
+#    cidr_blocks = aws_security_group.public-subnet-sg.id
+#    description = "Allow all inbound traffic from public subnet"
+#  }
 
   egress {
     protocol    = "tcp"
@@ -303,13 +303,13 @@ resource "aws_security_group" "private-subnet-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow outbound HTTPS access from the web servers to any IPv4 address."
   }
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = aws_security_group.public-subnet-sg.id
-    description = "Allow all outbound traffic to public subnet"
-  }
+#  egress {
+#    protocol    = "-1"
+#    from_port   = 0
+#    to_port     = 0
+#    cidr_blocks = aws_security_group.public-subnet-sg.id
+#    description = "Allow all outbound traffic to public subnet"
+#  }
 
 
   tags = {

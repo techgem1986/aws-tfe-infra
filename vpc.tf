@@ -9,7 +9,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
   tags = {
-    Name = "vpc"
+    Name = "Vpc"
     Environment = "Dev"
   }
 }
@@ -97,10 +97,10 @@ resource "aws_route_table" "private-route-table" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet-gateway.id
+    gateway_id = aws_nat_gateway.nat-gateway.id
   }
   tags = {
-    Name = "Public Route Table"
+    Name = "Private Route Table"
     Environment = "Dev"
   }
 }
@@ -114,4 +114,206 @@ resource "aws_route_table_association" "public-subnet-association" {
 resource "aws_route_table_association" "private-subnet-association" {
   subnet_id      = aws_subnet.private-subnet.id
   route_table_id = aws_route_table.private-route-table.id
+}
+
+/*network ACL for the public subnet*/
+
+resource "aws_network_acl" "public-network-acl" {
+  vpc_id = aws_vpc.vpc.id
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+  egress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+  egress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 32768
+    to_port    = 65535
+  }
+
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  tags = {
+    Name = "Public NACL"
+    Environment = "Dev"
+  }
+}
+
+/*network ACL for the private subnet*/
+
+resource "aws_network_acl" "private-network-acl" {
+  vpc_id = aws_vpc.vpc.id
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+  egress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+  egress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 32768
+    to_port    = 65535
+  }
+
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  tags = {
+    Name = "Private NACL"
+    Environment = "Dev"
+  }
+}
+
+
+resource "aws_security_group" "public-subnet-sg" {
+  description = "Security group attached to public subnet"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow inbound HTTP access to the web servers from any IPv4 address."
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow inbound HTTP access to the web servers from any IPv4 address."
+  }
+  ingress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = aws_security_group.private-subnet-sg.id
+    description = "Allow all inbound traffic from private subnet"
+  }
+
+  egress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound HTTP access to the web servers from any IPv4 address."
+  }
+  egress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound HTTPS access to the web servers from any IPv4 address."
+  }
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = aws_security_group.private-subnet-sg.id
+    description = "Allow all outbound traffic to private subnet"
+  }
+
+  tags = {
+    Name = "Public Security Group"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_security_group" "private-subnet-sg" {
+  description = "Security group attached to private subnet"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = aws_security_group.public-subnet-sg.id
+    description = "Allow all inbound traffic from public subnet"
+  }
+
+  egress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound HTTP access from the web servers to any IPv4 address."
+  }
+  egress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound HTTPS access from the web servers to any IPv4 address."
+  }
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = aws_security_group.public-subnet-sg.id
+    description = "Allow all outbound traffic to public subnet"
+  }
+
+
+  tags = {
+    Name = "Private Security Group"
+    Environment = "Dev"
+  }
 }

@@ -222,6 +222,15 @@ resource "aws_network_acl" "private-network-acl" {
   }
 }
 
+resource "aws_network_acl_association" "private-network-acl-association" {
+  network_acl_id = aws_network_acl.private-network-acl.id
+  subnet_id      = aws_subnet.private-subnet.id
+}
+
+resource "aws_network_acl_association" "public-network-acl-association" {
+  network_acl_id = aws_network_acl.public-network-acl.id
+  subnet_id      = aws_subnet.public-subnet.id
+}
 
 resource "aws_security_group" "public-subnet-sg" {
   description = "Security group attached to public subnet"

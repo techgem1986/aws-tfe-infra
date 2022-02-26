@@ -120,6 +120,7 @@ resource "aws_route_table_association" "private-subnet-association" {
 
 resource "aws_network_acl" "public-network-acl" {
   vpc_id = aws_vpc.vpc.id
+  subnet_ids = [aws_subnet.public-subnet.id]
 
   egress {
     protocol   = "tcp"
@@ -181,6 +182,7 @@ resource "aws_network_acl" "public-network-acl" {
 
 resource "aws_network_acl" "private-network-acl" {
   vpc_id = aws_vpc.vpc.id
+  subnet_ids = [aws_subnet.private-subnet.id]
 
   egress {
     protocol   = "tcp"
@@ -222,15 +224,7 @@ resource "aws_network_acl" "private-network-acl" {
   }
 }
 
-resource "aws_network_acl_association" "private-network-acl-association" {
-  network_acl_id = aws_network_acl.private-network-acl.id
-  subnet_id      = aws_subnet.private-subnet.id
-}
-
-resource "aws_network_acl_association" "public-network-acl-association" {
-  network_acl_id = aws_network_acl.public-network-acl.id
-  subnet_id      = aws_subnet.public-subnet.id
-}
+/* Public subnet security group */
 
 resource "aws_security_group" "public-subnet-sg" {
   description = "Security group attached to public subnet"
@@ -285,6 +279,8 @@ resource "aws_security_group" "public-subnet-sg" {
     Environment = "Dev"
   }
 }
+
+/* Private subnet security group */
 
 resource "aws_security_group" "private-subnet-sg" {
   description = "Security group attached to private subnet"

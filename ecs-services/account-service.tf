@@ -1,9 +1,9 @@
 # account-service
 resource "aws_ecs_service" "account-service" {
   name            = "account-service"
-  cluster         = data.aws_ecs_cluster.ecs-cluster.id
+  cluster         = var.cluster_id
   task_definition = aws_ecs_task_definition.task-definition-account-service.arn
-  iam_role        = data.aws_iam_role.ecs-role.arn
+  iam_role        = var.ecs_role_arn
   desired_count   = 1
 
   load_balancer {
@@ -48,15 +48,14 @@ EOF
 }
 
 resource "aws_cloudwatch_log_group" "log-group-account-service" {
-  name = "/"+ local.name +"/" + "account-service"
+  name = "/techgem1986/" + "account-service"
 }
 
 resource "aws_alb_target_group" "alb-target-group-account-service" {
   name       = "account-service"
   port       = 80
   protocol   = "HTTP"
-  vpc_id     = data.aws_vpc.vpc.id
-  depends_on = [data.aws_alb.alb]
+  vpc_id     = var.vpc_id
 
   stickiness {
     type            = "lb_cookie"
@@ -74,7 +73,7 @@ resource "aws_alb_target_group" "alb-target-group-account-service" {
 }
 
 resource "aws_alb_listener" "alb-listener-account-service" {
-  load_balancer_arn = data.aws_alb.alb.id
+  load_balancer_arn = var.alb_id
   port              = 80
   protocol          = "HTTP"
   default_action {

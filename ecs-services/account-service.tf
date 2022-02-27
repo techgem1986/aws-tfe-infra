@@ -48,7 +48,7 @@ EOF
 }
 
 resource "aws_cloudwatch_log_group" "log-group-account-service" {
-  name = "/techgem1986/" + "account-service"
+  name = "/techgem1986/account-service"
 }
 
 resource "aws_alb_target_group" "alb-target-group-account-service" {

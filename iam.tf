@@ -1,6 +1,6 @@
 # ecs ec2 role
 resource "aws_iam_role" "ec2-role" {
-  name = local.name + "-ec2-role"
+  name = local.ec2-role
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -19,12 +19,12 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "ec2-profile" {
-  name = local.name + "-ec2-profile"
+  name = local.name
   role = aws_iam_role.ec2-role.name
 }
 
 resource "aws_iam_role_policy" "ec2-policy" {
-  name = local.name + "-ec2-policy"
+  name = local.name
   role = aws_iam_role.ec2-role.id
 
   policy = <<EOF
@@ -70,7 +70,7 @@ EOF
 
 # ecs service role
 resource "aws_iam_role" "ecs-role" {
-  name = local.name + "-ecs-role"
+  name = local.ecs-role
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

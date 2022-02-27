@@ -12,3 +12,8 @@ terraform {
 provider "aws" {
   region = var.region
 }
+
+locals {
+  name        = "aws-stack"
+  environment = "dev"
+}

@@ -16,8 +16,8 @@ resource "aws_autoscaling_group" "autoscaling-group" {
   termination_policies      = ["OldestInstance"]
 
   tag {
-    key                 = "Name"
-    value               = local.name
+    key = "Name"
+    value = local.name
     propagate_at_launch = true
   }
 }

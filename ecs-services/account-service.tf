@@ -1,9 +1,9 @@
 # account-service
 resource "aws_ecs_service" "account-service" {
   name            = "account-service"
-  cluster         = var.cluster_id
+  cluster         = var.cluster
   task_definition = aws_ecs_task_definition.task-definition-account-service.arn
-  iam_role        = var.ecs_role_arn
+  iam_role        = var.ecs_role
   desired_count   = 1
 
   load_balancer {
@@ -55,7 +55,7 @@ resource "aws_alb_target_group" "alb-target-group-account-service" {
   name       = "account-service"
   port       = 80
   protocol   = "HTTP"
-  vpc_id     = var.vpc_id
+  vpc_id     = var.vpc
 
   stickiness {
     type            = "lb_cookie"
@@ -73,7 +73,7 @@ resource "aws_alb_target_group" "alb-target-group-account-service" {
 }
 
 resource "aws_alb_listener" "alb-listener-account-service" {
-  load_balancer_arn = var.alb_id
+  load_balancer_arn = var.alb
   port              = 80
   protocol          = "HTTP"
   default_action {

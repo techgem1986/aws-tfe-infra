@@ -5,7 +5,10 @@ resource "aws_alb" "alb" {
   security_groups = [aws_security_group.security-group-alb.id]
   enable_http2    = "true"
   idle_timeout    = 180
-
+  tags = {
+    Name = local.name
+    Environment = local.environment
+  }
 }
 
 

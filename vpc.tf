@@ -115,7 +115,6 @@ resource "aws_route_table_association" "private-subnet-2-association" {
 resource "aws_security_group" "security-group-ec2" {
   description = "Controls direct access to application instances (EC2)"
   vpc_id      = aws_vpc.vpc.id
-  name        = local.name
 
   ingress {
     protocol    = "tcp"
@@ -138,12 +137,15 @@ resource "aws_security_group" "security-group-ec2" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = local.name
+    Environment = local.environment
+  }
 }
 
 resource "aws_security_group" "security-group-alb" {
   description = "Controls access to the application ELB"
   vpc_id = aws_vpc.vpc.id
-  name   = local.name
 
   ingress {
     protocol    = "tcp"
@@ -164,5 +166,9 @@ resource "aws_security_group" "security-group-alb" {
     to_port   = 0
     protocol  = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = local.name
+    Environment = local.environment
   }
 }

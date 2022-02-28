@@ -9,7 +9,7 @@ resource "aws_ecs_service" "account-service" {
   load_balancer {
     target_group_arn = aws_alb_target_group.alb-target-group-account-service.id
     container_name   = "account-service"
-    container_port   = "80"
+    container_port   = "8080"
   }
   lifecycle {
     ignore_changes = [task_definition]
@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "task-definition-account-service" {
       {
         "hostPort": 0,
         "protocol": "tcp",
-        "containerPort": 80
+        "containerPort": 8080
       }
     ],
     "cpu": 256,
@@ -53,7 +53,7 @@ resource "aws_cloudwatch_log_group" "log-group-account-service" {
 
 resource "aws_alb_target_group" "alb-target-group-account-service" {
   name       = "account-service"
-  port       = 80
+  port       = 8901
   protocol   = "HTTP"
   vpc_id     = var.vpc
 
@@ -74,7 +74,7 @@ resource "aws_alb_target_group" "alb-target-group-account-service" {
 
 resource "aws_alb_listener" "alb-listener-account-service" {
   load_balancer_arn = var.alb
-  port              = 80
+  port              = 8901
   protocol          = "HTTP"
   default_action {
     target_group_arn = aws_alb_target_group.alb-target-group-account-service.id

@@ -66,13 +66,7 @@ resource "aws_iam_role_policy" "ec2-policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "dynamodb:Attributes",
-                "dynamodb:LeadingKeys",
-                "dynamodb:ReturnConsumedCapacity",
-                "dynamodb:ReturnValues",
-                "dynamodb:Select",
-                "dynamodb:EnclosingOperation",
-                "dynamodb:FullTableScan"
+                "dynamodb:*"
             ],
             "Resource": "*"
         }

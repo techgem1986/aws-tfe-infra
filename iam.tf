@@ -47,7 +47,7 @@ resource "aws_iam_role_policy" "ec2-policy" {
               "ecr:GetDownloadUrlForLayer",
               "ecr:BatchGetImage",
               "logs:CreateLogStream",
-              "logs:PutLogEvents"
+              "logs:PutLogEvents",
             ],
             "Resource": "*"
         },
@@ -62,6 +62,19 @@ resource "aws_iam_role_policy" "ec2-policy" {
             "Resource": [
                 "arn:aws:logs:*:*:*"
             ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Attributes",
+                "dynamodb:LeadingKeys",
+                "dynamodb:ReturnConsumedCapacity",
+                "dynamodb:ReturnValues",
+                "dynamodb:Select",
+                "dynamodb:EnclosingOperation",
+                "dynamodb:FullTableScan"
+            ],
+            "Resource": "*"
         }
     ]
 }
